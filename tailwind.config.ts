@@ -19,9 +19,9 @@ export default {
 		},
 		extend: {
 			backgroundImage: {
-				'wood-texture': "url('public/download.png')",
+				'wood-texture': "url('/download.png')",
 				// Use a more realistic, high-resolution cork image
-				'cork-texture': "url('public/cork-board.jpg')",
+				'cork-texture': "url('/cork-board.jpg')",
 			},
 			colors: {
 				border: 'hsl(var(--border))',
