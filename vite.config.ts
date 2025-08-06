@@ -1,29 +1,28 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: './',
-  server: {
-    host: "::",
-    port: 8080,
-  },
-  plugins: [
-    react(),
-  ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  // Configuration for Vercel deployment
-  build: {
-    outDir: "dist",
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-      },
-    },
-  },
+	base: '/',
+	server: {
+		host: '::',
+		port: 8080,
+	},
+	plugins: [react()],
+	resolve: {
+		alias: {
+			'@': path.resolve(__dirname, './src'),
+		},
+	},
+	// Configuration for Vercel deployment
+	build: {
+		outDir: 'dist',
+		assetsDir: '',
+		rollupOptions: {
+			output: {
+				manualChunks: undefined,
+			},
+		},
+	},
 });
