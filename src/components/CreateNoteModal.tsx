@@ -135,7 +135,7 @@ export function CreateNoteModal({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={handleClose}>
-			<DialogContent className="sm:max-w-lg p-8">
+			<DialogContent className="w-full max-w-md sm:max-w-lg p-8 flex flex-col max-h-[90vh] overflow-y-auto">
 				<DialogHeader className="mb-6">
 					<DialogTitle className="text-2xl">
 						{replyingTo ? `Reply to Note` : 'Create Secret Note'}
@@ -145,7 +145,7 @@ export function CreateNoteModal({
 					</DialogDescription>
 				</DialogHeader>
 
-				<form onSubmit={handleSubmit} className="space-y-6">
+				<form onSubmit={handleSubmit} className="flex flex-col gap-6">
 					<div>
 						<Label htmlFor="recipient" className="mb-3 block">
 							To (optional)

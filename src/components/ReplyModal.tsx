@@ -85,7 +85,7 @@ export function ReplyModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-8">
+      <DialogContent className="w-full max-w-xl sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-8 flex flex-col">
         <DialogHeader className="mb-6">
           <DialogTitle className="text-2xl">Replies to Note</DialogTitle>
           <DialogDescription>

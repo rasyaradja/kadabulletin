@@ -155,7 +155,7 @@ export function SecretBoard() {
 		// Wall Background
 		<div className="min-h-screen bg-geminiDark flex justify-center items-center p-6 sm:p-10">
 			{/* Wooden Frame */}
-			<div className="relative w-full max-w-7xl bg-cork-frame bg-wood-texture bg-gradient-to-br from-cork-frameLight to-cork-frame p-4 rounded-xl shadow-2xl border-4 border-solid border-cork-frameDark">
+			<div className="relative w-full max-w-5xl bg-cork-frame bg-wood-texture bg-gradient-to-br from-cork-frameLight to-cork-frame p-4 rounded-xl shadow-2xl border-4 border-solid border-cork-frameDark">
 				{/* Inner shadow for frame depth */}
 				<div className="shadow-[inset_0_4px_12px_rgba(0,0,0,0.6)] rounded-lg">
 					{/* Realistic Cork Board */}

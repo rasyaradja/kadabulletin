@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, Reply, Trash2, Flag } from 'lucide-react';
+import { Heart, Reply, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -53,7 +53,6 @@ export function SecretNote({
 	image_url,
 }: SecretNoteProps) {
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [isReporting, setIsReporting] = useState(false);
 	const { toast } = useToast();
 
 	const isOwnNote = note.session_id === currentSessionId;
@@ -85,32 +84,6 @@ export function SecretNote({
 			});
 		} finally {
 			setIsDeleting(false);
-		}
-	};
-
-	const handleReport = async () => {
-		setIsReporting(true);
-		try {
-			const { error } = await (supabase as any).from('reports').insert({
-				note_id: note.id,
-				session_id: currentSessionId,
-			});
-
-			if (error) throw error;
-
-			toast({
-				title: 'Note reported',
-				description: 'Thank you for reporting inappropriate content.',
-			});
-		} catch (error) {
-			console.error('Error reporting note:', error);
-			toast({
-				title: 'Error',
-				description: 'Failed to report note. Please try again.',
-				variant: 'destructive',
-			});
-		} finally {
-			setIsReporting(false);
 		}
 	};
 
@@ -191,20 +164,6 @@ export function SecretNote({
 							className="h-8 px-2 hover:bg-black/10"
 						>
 							View Replies ({note.replies.length})
-						</Button>
-					)}
-
-					
-
-					{!isOwnNote && (
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={handleReport}
-							disabled={isReporting}
-							className="h-8 px-2 hover:bg-orange-500/20 text-orange-600"
-						>
-							<Flag size={14} />
 						</Button>
 					)}
 				</div>
