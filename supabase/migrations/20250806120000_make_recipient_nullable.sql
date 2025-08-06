@@ -1,0 +1,2 @@
+ALTER TABLE public.notes
+ALTER COLUMN recipient DROP NOT NULL;
