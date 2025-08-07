@@ -152,14 +152,16 @@ export function SecretNote({
 			{/* Actions */}
 			<div className="flex items-center justify-between pt-4 border-t border-gray-300 border-opacity-30 mt-auto">
 				<div className="flex items-center gap-2">
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => onReply(note.id)}
-						className="h-8 px-2 hover:bg-black/10"
-					>
-						<Reply size={14} />
-					</Button>
+					{!note.replying_to_id && (
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => onReply(note.id)}
+							className="h-8 px-2 hover:bg-black/10"
+						>
+							<Reply size={14} />
+						</Button>
+					)}
 				</div>
 
 				<div className="flex items-center gap-1">
