@@ -13,7 +13,7 @@ interface Note {
 	short_id: string;
 	message: string;
 	color: string;
-	recipient: string;
+	to_recipient?: string;
 	from_sender?: string;
 	replying_to_id?: string;
 	created_at: string;

@@ -11,7 +11,7 @@ interface Note {
 	short_id: string;
 	message: string;
 	color: string;
-	recipient: string;
+	to_recipient?: string;
 	from_sender?: string;
 	replying_to_id?: string;
 	created_at: string;
@@ -109,9 +109,9 @@ export function SecretNote({
 			</div>
 
 			{/* Recipient */}
-			{note.recipient && (
+			{note.to_recipient && (
 				<div className="text-sm font-semibold text-gray-700 mb-3">
-					To: {note.recipient}
+					To: {note.to_recipient}
 				</div>
 			)}
 
