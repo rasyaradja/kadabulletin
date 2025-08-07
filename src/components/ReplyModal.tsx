@@ -15,6 +15,7 @@ interface Note {
   
   created_at: string;
   session_id: string;
+  image_url?: string;
   
 }
 
@@ -107,6 +108,7 @@ export function ReplyModal({
                 onDelete={onNoteDeleted}
                 currentSessionId={currentSessionId}
                 onViewReplies={() => { /* Replies of replies not supported in this modal */ } }
+                image_url={replyNote.image_url}
               />
             ))}
           </div>
