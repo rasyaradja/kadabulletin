@@ -18,7 +18,7 @@ interface Note {
 	replying_to_id?: string;
 	created_at: string;
 	session_id: string;
-	
+
 	image_url?: string;
 	replies_count?: number;
 }
@@ -51,9 +51,11 @@ export function SecretBoard() {
 			const from = currentPage * NOTES_PER_PAGE;
 			const to = from + NOTES_PER_PAGE - 1;
 
-			const { data: notesData, error: notesError, count } = await (
-				supabase as any
-			)
+			const {
+				data: notesData,
+				error: notesError,
+				count,
+			} = await (supabase as any)
 				.from('notes')
 				.select('*', { count: 'exact' })
 				.is('replying_to_id', null)
@@ -64,9 +66,10 @@ export function SecretBoard() {
 
 			const notesWithReplyCounts = await Promise.all(
 				(notesData || []).map(async (note: Note) => {
-					const { data: replyCountData, error: replyCountError } = await (
-						supabase as any
-					).rpc('get_note_replies_count', { note_id: note.id });
+					const { data: replyCountData, error: replyCountError } =
+						await (supabase as any).rpc('get_note_replies_count', {
+							note_id: note.id,
+						});
 
 					if (replyCountError) {
 						console.error(
@@ -184,7 +187,7 @@ export function SecretBoard() {
 											'1px 1px 3px rgba(0,0,0,0.5)',
 									}}
 								>
-									KADA'S Bulletin Board
+									KADA's Bulletin Board
 								</h1>
 
 								<div className="flex-1 max-w-md min-w-[250px]">
@@ -244,7 +247,12 @@ export function SecretBoard() {
 										>
 											<SecretNote
 												note={note}
-												postNumber={totalNotesCount - (currentPage * NOTES_PER_PAGE + index)}
+												postNumber={
+													totalNotesCount -
+													(currentPage *
+														NOTES_PER_PAGE +
+														index)
+												}
 												onReply={handleReply}
 												onDelete={handleNoteDeleted}
 												currentSessionId={sessionId}
@@ -263,15 +271,25 @@ export function SecretBoard() {
 						{processedNotes.length > 0 && (
 							<div className="flex justify-center gap-4 mt-8">
 								<Button
-									onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+									onClick={() =>
+										setCurrentPage((prev) =>
+											Math.max(0, prev - 1)
+										)
+									}
 									disabled={currentPage === 0}
 									className="bg-blue-600 hover:bg-blue-700 text-white shadow-md h-12 px-6 rounded-lg"
 								>
 									Previous Page
 								</Button>
 								<Button
-									onClick={() => setCurrentPage((prev) => prev + 1)}
-									disabled={currentPage * NOTES_PER_PAGE + processedNotes.length >= totalNotesCount}
+									onClick={() =>
+										setCurrentPage((prev) => prev + 1)
+									}
+									disabled={
+										currentPage * NOTES_PER_PAGE +
+											processedNotes.length >=
+										totalNotesCount
+									}
 									className="bg-blue-600 hover:bg-blue-700 text-white shadow-md h-12 px-6 rounded-lg"
 								>
 									Next Page
