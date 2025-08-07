@@ -1,0 +1,1 @@
+CREATE OR REPLACE FUNCTION get_note_replies_count(note_id uuid) RETURNS bigint LANGUAGE plpgsql AS $$ DECLARE reply_count bigint; BEGIN SELECT count(*) FROM notes WHERE replying_to_id = note_id INTO reply_count; RETURN reply_count; END; $$;

@@ -11,11 +11,11 @@ interface Note {
   color: string;
   recipient: string;
   from_sender?: string;
-  reply_to?: string;
-  likes_count: number;
+  	replying_to_id?: string;
+  
   created_at: string;
   session_id: string;
-  replies?: Note[];
+  
 }
 
 interface ReplyModalProps {
@@ -49,7 +49,7 @@ export function ReplyModal({
       const { data: repliesData, error } = await (supabase as any)
         .from('notes')
         .select('*')
-        .eq('reply_to', parentNoteId)
+        				.eq('replying_to_id', parentNoteId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -73,7 +73,7 @@ export function ReplyModal({
     const channel = supabase
       .channel(`replies-for-${parentNoteId}`)
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'notes', filter: `reply_to=eq.${parentNoteId}` },
+        { event: '*', schema: 'public', table: 'notes', filter: `replying_to_id=eq.${parentNoteId}` },
         () => fetchReplies()
       )
       .subscribe();

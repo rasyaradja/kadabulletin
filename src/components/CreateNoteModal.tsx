@@ -183,12 +183,12 @@ export function CreateNoteModal({
 							placeholder="Share your secret thoughts..."
 							value={message}
 							onChange={(e) => setMessage(e.target.value)}
-							maxLength={500}
+														maxLength={150}
 							className="min-h-[160px] resize-none rounded-lg"
 							required
 						/>
 						<div className="text-xs text-muted-foreground mt-3">
-							{message.length}/500 characters
+							{message.length}/150 characters
 						</div>
 					</div>
 

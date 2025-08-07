@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Heart, Reply, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ImageViewerModal } from './ImageViewerModal';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -12,11 +13,11 @@ interface Note {
 	color: string;
 	recipient: string;
 	from_sender?: string;
-	reply_to?: string;
+	replying_to_id?: string;
 	created_at: string;
 	session_id: string;
-	replies?: Note[];
 	image_url?: string;
+	replies_count?: number;
 }
 
 interface SecretNoteProps {
@@ -52,6 +53,8 @@ export function SecretNote({
 	onViewReplies,
 	image_url,
 }: SecretNoteProps) {
+	const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+	const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const { toast } = useToast();
 
@@ -125,7 +128,11 @@ export function SecretNote({
 					<img
 						src={image_url}
 						alt="Note image"
-						className="w-full h-auto"
+						className="w-full h-auto cursor-pointer"
+						onClick={() => {
+							setSelectedImage(image_url);
+							setIsImageViewerOpen(true);
+						}}
 					/>
 				</div>
 			)}
@@ -136,7 +143,7 @@ export function SecretNote({
 			</p>
 
 			{/* Reply indicator */}
-			{note.reply_to && (
+			{note.replying_to_id && (
 				<div className="text-xs text-gray-500 mb-3 italic">
 					↳ Reply to Note
 				</div>
@@ -156,14 +163,14 @@ export function SecretNote({
 				</div>
 
 				<div className="flex items-center gap-1">
-					{note.replies && note.replies.length > 0 && (
+					{note.replies_count !== undefined && (
 						<Button
 							variant="ghost"
 							size="sm"
 							onClick={() => onViewReplies(note.id)}
 							className="h-8 px-2 hover:bg-black/10"
 						>
-							View Replies ({note.replies.length})
+							View Replies {note.replies_count > 0 && `(${note.replies_count})`}
 						</Button>
 					)}
 				</div>
@@ -173,6 +180,14 @@ export function SecretNote({
 			<div className="text-xs text-gray-500 mt-2">
 				{new Date(note.created_at).toLocaleDateString()}
 			</div>
+
+			{selectedImage && (
+				<ImageViewerModal
+					isOpen={isImageViewerOpen}
+					onClose={() => setIsImageViewerOpen(false)}
+					imageUrl={selectedImage}
+				/>
+			)}
 		</div>
 	);
 }

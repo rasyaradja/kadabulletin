@@ -7,60 +7,106 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "12.2.12 (cd3cf9e)"
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
+      likes: {
+        Row: {
+          created_at: string
+          id: string
+          note_id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note_id: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notes: {
         Row: {
           color: string
           created_at: string
-          from_sender: string | null
           id: string
+          likes: number
           message: string
-          recipient: string
-          reply_to: string | null
-          reports_count: number
+          replying_to_id: string | null
           session_id: string
           short_id: string
+          to_recipient: string | null
           updated_at: string
         }
         Insert: {
           color?: string
           created_at?: string
-          from_sender?: string | null
           id?: string
+          likes?: number
           message: string
-          recipient: string
-          reply_to?: string | null
-          reports_count?: number
+          replying_to_id?: string | null
           session_id: string
-          short_id?: string
+          short_id: string
+          to_recipient?: string | null
           updated_at?: string
         }
         Update: {
           color?: string
           created_at?: string
-          from_sender?: string | null
           id?: string
+          likes?: number
           message?: string
-          recipient?: string
-          reply_to?: string | null
-          reports_count?: number
+          replying_to_id?: string | null
           session_id?: string
           short_id?: string
+          to_recipient?: string | null
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "notes_reply_to_fkey"
-            columns: ["reply_to"]
+            foreignKeyName: "notes_replying_to_id_fkey"
+            columns: ["replying_to_id"]
             isOneToOne: false
             referencedRelation: "notes"
-            referencedColumns: ["id"]
+            referencedColumns: ["short_id"]
           },
         ]
       }
@@ -69,21 +115,18 @@ export type Database = {
           created_at: string
           id: string
           note_id: string
-          reason: string
           session_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           note_id: string
-          reason: string
           session_id: string
         }
         Update: {
           created_at?: string
           id?: string
           note_id?: string
-          reason?: string
           session_id?: string
         }
         Relationships: [
@@ -233,7 +276,11 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
 } as const
+

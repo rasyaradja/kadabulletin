@@ -35,3 +35,6 @@ GEMINI.md
 # Build artifacts
 build
 coverage
+.gemini.md/
+.package-lock.json
+.image.png/

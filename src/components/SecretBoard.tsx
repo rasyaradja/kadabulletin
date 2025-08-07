@@ -15,14 +15,16 @@ interface Note {
 	color: string;
 	recipient: string;
 	from_sender?: string;
-	reply_to?: string;
+	replying_to_id?: string;
 	created_at: string;
 	session_id: string;
-	replies?: Note[];
+	
 	image_url?: string;
+	replies_count?: number;
 }
 
 export function SecretBoard() {
+	const NOTES_PER_PAGE = 8;
 	const [notes, setNotes] = useState<Note[]>([]);
 	const [processedNotes, setProcessedNotes] = useState<Note[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -33,6 +35,8 @@ export function SecretBoard() {
 	const [selectedNoteForReplies, setSelectedNoteForReplies] = useState<
 		string | null
 	>(null);
+	const [currentPage, setCurrentPage] = useState(0);
+	const [totalNotesCount, setTotalNotesCount] = useState(0);
 	const [sessionId] = useState(() => {
 		const stored = localStorage.getItem('secretboard_session');
 		if (stored) return stored;
@@ -44,14 +48,39 @@ export function SecretBoard() {
 
 	const fetchNotes = useCallback(async () => {
 		try {
-			const { data: notesData, error: notesError } = await (
+			const from = currentPage * NOTES_PER_PAGE;
+			const to = from + NOTES_PER_PAGE - 1;
+
+			const { data: notesData, error: notesError, count } = await (
 				supabase as any
 			)
 				.from('notes')
-				.select('*')
-				.order('created_at', { ascending: false });
+				.select('*', { count: 'exact' })
+				.is('replying_to_id', null)
+				.order('created_at', { ascending: false })
+				.range(from, to);
+
 			if (notesError) throw notesError;
-			setNotes(notesData || []);
+
+			const notesWithReplyCounts = await Promise.all(
+				(notesData || []).map(async (note: Note) => {
+					const { data: replyCountData, error: replyCountError } = await (
+						supabase as any
+					).rpc('get_note_replies_count', { note_id: note.id });
+
+					if (replyCountError) {
+						console.error(
+							`Error fetching reply count for note ${note.id}:`,
+							replyCountError
+						);
+						return { ...note, replies_count: 0 };
+					}
+					return { ...note, replies_count: replyCountData };
+				})
+			);
+
+			setNotes(notesWithReplyCounts);
+			setTotalNotesCount(count || 0);
 		} catch (error) {
 			console.error('Error fetching notes:', error);
 			toast({
@@ -62,7 +91,7 @@ export function SecretBoard() {
 		} finally {
 			setLoading(false);
 		}
-	}, [toast]);
+	}, [currentPage, toast]);
 
 	useEffect(() => {
 		fetchNotes();
@@ -81,19 +110,10 @@ export function SecretBoard() {
 
 	useEffect(() => {
 		const notesById = new Map<string, Note>(
-			notes.map((note) => [note.id, { ...note, replies: [] }])
+			notes.map((note) => [note.id, { ...note }])
 		);
-		for (const note of notes) {
-			if (note.reply_to && notesById.has(note.reply_to)) {
-				const parentNote = notesById.get(note.reply_to);
-				if (parentNote) {
-					parentNote.replies = parentNote.replies || [];
-					parentNote.replies.push(note);
-				}
-			}
-		}
 		let currentProcessedNotes = Array.from(notesById.values()).filter(
-			(note) => !note.reply_to
+			(note) => !note.replying_to_id
 		);
 		currentProcessedNotes.sort(
 			(a, b) =>
@@ -101,13 +121,7 @@ export function SecretBoard() {
 				new Date(a.created_at).getTime()
 		);
 		currentProcessedNotes.forEach((note) => {
-			if (note.replies) {
-				note.replies.sort(
-					(a, b) =>
-						new Date(a.created_at).getTime() -
-						new Date(b.created_at).getTime()
-				);
-			}
+			// Replies are now fetched directly by ReplyModal, no need to sort here
 		});
 		if (searchQuery.trim()) {
 			currentProcessedNotes = currentProcessedNotes.filter(
@@ -230,10 +244,7 @@ export function SecretBoard() {
 										>
 											<SecretNote
 												note={note}
-												postNumber={
-													processedNotes.length -
-													index
-												}
+												postNumber={totalNotesCount - (currentPage * NOTES_PER_PAGE + index)}
 												onReply={handleReply}
 												onDelete={handleNoteDeleted}
 												currentSessionId={sessionId}
@@ -247,6 +258,26 @@ export function SecretBoard() {
 								</div>
 							)}
 						</div>
+
+						{/* Pagination Controls */}
+						{processedNotes.length > 0 && (
+							<div className="flex justify-center gap-4 mt-8">
+								<Button
+									onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+									disabled={currentPage === 0}
+									className="bg-blue-600 hover:bg-blue-700 text-white shadow-md h-12 px-6 rounded-lg"
+								>
+									Previous Page
+								</Button>
+								<Button
+									onClick={() => setCurrentPage((prev) => prev + 1)}
+									disabled={currentPage * NOTES_PER_PAGE + processedNotes.length >= totalNotesCount}
+									className="bg-blue-600 hover:bg-blue-700 text-white shadow-md h-12 px-6 rounded-lg"
+								>
+									Next Page
+								</Button>
+							</div>
+						)}
 
 						{/* Modals remain outside the flow */}
 						<CreateNoteModal
